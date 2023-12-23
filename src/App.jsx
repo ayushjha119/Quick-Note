@@ -31,7 +31,7 @@ function App() {
 
   const updateNote = async (id, newText) => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("notes")
         .update({ text: newText })
         .eq("id", id)
