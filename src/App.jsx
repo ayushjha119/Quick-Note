@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import QuickNote from "./components/quicknote";
+import QuickNote from "./components/QuickNote";
 import { supabase } from "./supabaseClient";
 
 function App() {
