@@ -1,17 +1,24 @@
 import { useState } from "react";
-const QuickNote = () => {
+const QuickNote = ({ id, text, onUpdate, onDelete }) => {
   const [isEditing, setEditing] = useState(false);
+  const [newText, setNewText] = useState(text);
+
   const handleEdit = () => {
     setEditing(true);
   };
   const handleSave = () => {
+    onUpdate(id, newText);
     setEditing(false);
   };
   return (
     <>
       {isEditing ? (
         <div className="bg-yellow-100 p-3 rounded-md">
-          <textarea className="bg-yellow-50"></textarea>
+          <textarea
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            className="bg-yellow-50"
+          ></textarea>
           <br />
           <button
             onClick={handleSave}
@@ -22,7 +29,7 @@ const QuickNote = () => {
         </div>
       ) : (
         <div className="m-6 bg-yellow-100 p-2 rounded-md shadow-lg shadow-slate-300">
-          <p className="m-3">New Text</p>
+          <p className="m-3">{text}</p>
           <div className="flex justify-end gap-2">
             <button
               onClick={handleEdit}
@@ -44,7 +51,10 @@ const QuickNote = () => {
               </svg>
             </button>
 
-            <button className="text-white text-sm bg-rose-700 hover:bg-rose-800 p-1 dark:bg-rose-600 dark:hover:bg-rose-700 rounded-lg">
+            <button
+              onClick={onDelete}
+              className="text-white text-sm bg-rose-700 hover:bg-rose-800 p-1 dark:bg-rose-600 dark:hover:bg-rose-700 rounded-lg"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
