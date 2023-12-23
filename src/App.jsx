@@ -1,25 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import QuickNote from "./components/quicknote";
+import { supabase } from "./supabaseClient";
 
 function App() {
   const [notes, setNotes] = useState([]);
-  const addNote = () => {
-    setNotes([
-      ...notes,
-      { id: Date.now(), text: "Click Edit to write your note ..." },
-    ]);
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+  const fetchNotes = async () => {
+    try {
+      let { data, error } = await supabase.from("notes").select("*");
+      if (error) throw error;
+      setNotes(data || []);
+    } catch (error) {
+      console.log("Error fetcching notes: ", error.message);
+    }
+  };
+  const addNote = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("notes")
+        .insert([{ text: "Click Edit to write your note ..." }])
+        .select();
+      if (error) throw error;
+      setNotes([...notes, ...data]);
+    } catch (error) {
+      console.log("Error adding note: ", error.message);
+    }
   };
 
-  const updateNote = (id, newText) => {
-    setNotes((preNote) =>
-      preNote.map((note) =>
-        note.id === id ? { ...note, text: newText } : note
-      )
-    );
+  const updateNote = async (id, newText) => {
+    try {
+      const { data, error } = await supabase
+        .from("notes")
+        .update({ text: newText })
+        .eq("id", id)
+        .select();
+      if (error) throw error;
+      setNotes((preNote) =>
+        preNote.map((note) =>
+          note.id === id ? { ...note, text: newText } : note
+        )
+      );
+    } catch (error) {
+      console.log("Error updating note: ", error.message);
+    }
   };
 
-  const deleteNote = (id) => {
-    setNotes((preNote) => preNote.filter((note) => note.id !== id));
+  const deleteNote = async (id) => {
+    try {
+      const { error } = await supabase.from("notes").delete().eq("id", id);
+      if (error) throw error;
+      setNotes((preNote) => preNote.filter((note) => note.id !== id));
+    } catch (error) {
+      console.log("Error deleting note: ", error.message);
+    }
   };
 
   return (
